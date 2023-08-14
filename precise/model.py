@@ -15,8 +15,10 @@
 Loads model
 """
 import attr
+from tensorflow.keras.layers import LSTM,GRU
 from os.path import isfile
 from typing import *
+
 
 from precise.functions import load_keras, false_pos, false_neg, weighted_log_loss, set_loss_bias
 from precise.params import inject_params, pr
@@ -70,7 +72,7 @@ def create_model(model_name: Optional[str], params: ModelParams) -> 'Sequential'
         model = load_precise_model(model_name)
     else:
         from keras.layers.core import Dense
-        from keras.layers.recurrent import GRU
+        from tensorflow.keras.layers import GRU
         from keras.models import Sequential
 
         model = Sequential()

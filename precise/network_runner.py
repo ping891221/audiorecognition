@@ -53,11 +53,11 @@ class TensorFlowRunner(Runner):
         self.inp_var = self.graph.get_operation_by_name('import/net_input').outputs[0]
         self.out_var = self.graph.get_operation_by_name('import/net_output').outputs[0]
 
-        self.sess = self.tf.Session(graph=self.graph)
+        #self.sess = self.tf.Session(graph=self.graph)
 
     def load_graph(self, model_file: str) -> 'tf.Graph':
         graph = self.tf.Graph()
-        graph_def = self.tf.GraphDef()
+        #graph_def = self.tf.GraphDef()
 
         with open(model_file, "rb") as f:
             graph_def.ParseFromString(f.read())
@@ -68,7 +68,8 @@ class TensorFlowRunner(Runner):
 
     def predict(self, inputs: np.ndarray) -> np.ndarray:
         """Run on multiple inputs"""
-        return self.sess.run(self.out_var, {self.inp_var: inputs})
+        with self.graph.as_default():
+            return self.tf.compat.v1.Session().run(self.out_var, {self.inp_var: inputs})
 
     def run(self, inp: np.ndarray) -> float:
         return self.predict(inp[np.newaxis])[0][0]
@@ -80,15 +81,16 @@ class KerasRunner(Runner):
         import tensorflow as tf
         # ISSUE 88 - Following 3 lines added to resolve issue 88 - JM 2020-02-04 per liny90626
         from tensorflow.python.keras.backend import set_session # ISSUE 88
-        self.sess = tf.Session() # ISSUE 88
-        set_session(self.sess) # ISSUE 88
+        #self.sess = tf.Session() # ISSUE 88
+        #set_session(self.sess) # ISSUE 88
         self.model = load_precise_model(model_name)
-        self.graph = tf.get_default_graph()
+        #self.graph = tf.get_default_graph()
+        self.graph = tf.compat.v1.get_default_graph()
 
     def predict(self, inputs: np.ndarray):
-        from tensorflow.python.keras.backend import set_session		# ISSUE 88
-        with self.graph.as_default():
-            set_session(self.sess)		# ISSUE 88
+        #from tensorflow.python.keras.backend import set_session		# ISSUE 88
+        #with self.graph.as_default():
+            #set_session(self.sess)		# ISSUE 88
             return self.model.predict(inputs)
 
     def run(self, inp: np.ndarray) -> float:

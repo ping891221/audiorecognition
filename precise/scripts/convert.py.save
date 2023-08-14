@@ -72,7 +72,7 @@ class ConvertScript(BaseScript):
                 copyfile(model_path + '.params',out_file + '.params')
         
         print('Saved graph to:', filename)
-        print('Saved model to:', out_dir)
+	
 
 
         sess = K.get_session()
@@ -81,22 +81,22 @@ class ConvertScript(BaseScript):
         tf.io.write_graph(sess.graph.as_graph_def(), out_dir, filename + 'txt', as_text=True)
         print('Saved readable graph to:', filename + 'txt')
 
-        # Write the graph in binary .pb file tensorflow2.X does not do
-        #from precise.model import load_precise_model
-        #from tensorflow.python.framework import graph_util
-        #from tensorflow.python.framework import graph_io
+        # Write the graph in binary .pb file
+        from precise.model import load_precise_model
+        from tensorflow.python.framework import graph_util
+        from tensorflow.python.framework import graph_io
 
         #cgraph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), [out_name])
         #graph_io.write_graph(cgraph, out_dir, filename, as_text=False)
-        #tf.saved_model.save(model,out_dir)
-        #loaded = tf.saved_model.load(out_dir)
-        #tf.io.write_graph(loaded.graph, out_dir,'test1.pb',as_text=False)
+        tf.saved_model.save(model,out_dir)
+        loaded = tf.saved_model.load(out_dir)
+        tf.io.write_graph(loaded.graph, out_dir,'test1.pb',as_text=False)
         
-        #if isfile(model_path + '.params'):
-            #copyfile(model_path + '.params', out_file + '.params')
+        if isfile(model_path + '.params'):
+            copyfile(model_path + '.params', out_file + '.params')
 
-        #print('Saved graph to:', filename)
-        #print('Saved graph to:', os.path.join(out_dir, filename))
+        print('Saved graph to:', filename)
+        print('Saved graph to:', os.path.join(out_dir, filename))
 
         del sess
 
